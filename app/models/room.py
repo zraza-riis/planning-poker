@@ -11,7 +11,7 @@ class Room(db.Model):
     def __repr__(self):
         return f'<Room {self.name}>'
     
-class User(db.Model):
+class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
@@ -19,16 +19,16 @@ class User(db.Model):
     room = db.relationship('Room', backref=db.backref('estimations', lazy=True))
 
     def __repr__(self):
-        return f'<User {self.name}>'
+        return f'<Player {self.name}>'
 
 class Estimation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.Integer)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    player_id = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=False)
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
 
-    user = db.relationship('User', backref=db.backref('estimations', lazy=True))
+    player = db.relationship('Player', backref=db.backref('estimations', lazy=True))
     room = db.relationship('Room', backref=db.backref('estimations', lazy=True))
 
     def __repr__(self):
