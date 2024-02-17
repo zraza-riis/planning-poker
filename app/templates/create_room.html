@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-2">
+<div class="container mt-2 p-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <h2 class="mb-4">Create Room</h2>
             <form method="post">
+                <h2 class="mb-4">Create Room</h2>
                 <div class="form-group">
                     <label for="room_name">Room's Name</label><br><br>
                     <input type="text" class="form-control" id="room_name" name="room_name" required>
                 </div>
                 <div class="form-group mt-3">
                     <label for="details">Description</label><br><br>
-                    <textarea class="form-control" id="room_description" name="room_description" rows="5" required></textarea>
+                    <textarea class="form-control" id="room_description" name="room_description" rows="5"></textarea>
                 </div>
                 <br>
                 <button type="submit" class="btn btn-primary">Create Room</button>

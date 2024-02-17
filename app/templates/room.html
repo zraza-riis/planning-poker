@@ -1,9 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="row" style="max-width: 100%;">
+    <div class="col-9">
+        
+        <div class="container text-center">
+            <br>
+            <h1>You have joined room "{{ room.name }}"</h1>
+            <br>
+            <h4>Invite your team members with the following link: </h4>
+            <p>
+                <a href="{{ room.join_link }}">{{ room.join_link }}</a>
+            </p>
+            <br>
+            <h5>Connected Users: {{ room.players }}</h5>        
+        </div>
+    </div>
+    <div class="col-3 bg-body" style="height: 100rem;">
+        <div class="container">
+            <br>
+            <h1 class="text-center">Issues</h1>
+        </div>
+    </div>
+</div>
 <div class="container mt-5">
-    <h1>You have joined room {{ room.name }}</h1>
-    <h4>Invite your team members with the following link: {{ room.join_link }}</h4>
-    <h5>Connected Users: {{ room.players }}</h5>
 </div>
 {% endblock %}
