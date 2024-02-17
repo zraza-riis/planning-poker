@@ -18,6 +18,9 @@ def create_app(config_object=Config):
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
 
+    from app.ui import bp as ui_bp
+    app.register_blueprint(ui_bp)
+
     @app.route('/test/')
     def test_page():
         return '<h1>It Works!</h1>'
