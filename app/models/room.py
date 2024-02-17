@@ -27,9 +27,20 @@ class Estimation(db.Model):
 
     player_id = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=False)
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    prompt_id = db.Column(db.Integer, db.ForeignKey('prompt.id'), nullable=False)
 
     player = db.relationship('Player', backref=db.backref('estimations', lazy=True))
     room = db.relationship('Room', backref=db.backref('estimations', lazy=True))
+    prompt = db.relationship('Prompt', back_populates='estimations')
 
     def __repr__(self):
         return f'<Estimation {self.value}>'
+    
+class Prompt(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(240), nullable=False)
+
+    estimations = db.relationship('Estimation', back_populates='prompt', foreign_keys='Estimation.prompt_id', lazy=True)
+
+    def __repr__(self):
+        return f'<Prompt {self.title}>'
