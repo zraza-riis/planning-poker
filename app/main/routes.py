@@ -1,8 +1,9 @@
 from flask import render_template, jsonify, url_for, request, redirect
+from flask_socketio import emit, join_room, leave_room
 from app.main import bp
 import uuid
 
-from app import db
+from app import db, socketio
 from app.main import bp
 from app.models import Room, Player
 
@@ -26,6 +27,8 @@ def create_room():
         db.session.add(room)
         db.session.commit()
 
+        socketio.emit('new_room', {'room_uuid': room_uuid}, namespace='/')
+
         return redirect(join_link)
     return render_template('create_room.html')
 
@@ -42,8 +45,20 @@ def join_room(room_uuid):
         return redirect(url_for('main.room_page', room_uuid=room_uuid))
     return render_template("join_room.html", room=room)
 
+@socketio.on('connect', namespace='/')
+def handle_connect():
+    print('Client connected')
+
+@socketio.on('disconnect', namespace='/')
+def handle_disconnect():
+    print('Client disconnected')
+
+
 @bp.route('/room/<room_uuid>', methods=['GET'])
 def room_page(room_uuid):
     room = Room.query.filter_by(uuid=room_uuid).first_or_404()
     print(room)
+
+    join_room(room_uuid)
+
     return render_template('room.html', room=room)
