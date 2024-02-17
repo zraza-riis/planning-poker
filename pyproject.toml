@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "planning_poker"
+name = "app"
 version = "0.1.0"
 description = "A simple planning poker app for WinHacks 2024"
 authors = ["Jeremie Bornais <jeremiejbornais@gmail.com>"]
