@@ -3,5 +3,7 @@
 {% block content %}
 <div class="container mt-5">
     <h1>You have joined room {{ room.name }}</h1>
+    <h4>Invite your team members with the following link: {{ room.join_link }}</h4>
+    <h5>Connected Users: {{ room.players }}</h5>
 </div>
 {% endblock %}
