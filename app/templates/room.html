@@ -6,8 +6,13 @@
     <h4>Invite your team members with the following link: {{ room.join_link }}</h4>
     <h5>Connected Users: {{ room.players }}</h5>
 
+    <form id="promptForm">
+        <input type="text" id="promptInput" placeholder="Enter your prompt" required>
+        <button type="submit">Submit</button>
+    </form>
+
     <script type="text/javascript">
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        var socket = io.connect();
     
         socket.on('connect', function() {
             console.log('Connected to server');
@@ -17,15 +22,28 @@
             console.log('Disconnected from server');
         });
     
-        // Handle the 'new_room' event to update active prompts
         socket.on('new_room', function(data) {
             console.log('New room created:', data.room_uuid);
-    
-            // You can update the prompts using JavaScript on the client side
-            // For example, you can make an AJAX request to fetch and update prompts
-            // without a full page reload.
         });
+
+        // Handle a new Prompt getting created
+        socket.on('new_prompt', function(data) {
+            console.log('New prompt submitted:', data.prompt_title);
+        });
+
+        document.getElementById('promptForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var promptInput = document.getElementById('promptInput').value;
+
+            socket.emit('new_prompt', {'room_uuid': '{{ room.uuid }}', 'prompt_title': promptInput});
+
+            document.getElementById('promptInput').value = '';
+
+        });
+
+        
     </script>
-    
+
 </div>
 {% endblock %}

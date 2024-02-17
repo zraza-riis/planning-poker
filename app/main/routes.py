@@ -5,7 +5,7 @@ import uuid
 
 from app import db, socketio
 from app.main import bp
-from app.models import Room, Player
+from app.models import Room, Player, Prompt
 
 @bp.route('/')
 def index():
@@ -53,6 +53,20 @@ def handle_connect():
 def handle_disconnect():
     print('Client disconnected')
 
+@socketio.on('new_prompt', namespace='/')
+def handle_new_prompt(data):
+    room_uuid = data['room_uuid']
+    prompt_title = data['prompt_title']
+
+    print(f"Received new_prompt in room {room_uuid}: {prompt_title}")
+
+    room = Room.query.filter_by(uuid=room_uuid).first_or_404()
+
+    new_prompt = Prompt(title=prompt_title)
+    db.session.add(new_prompt)
+    db.session.commit()
+
+    socketio.emit('new_prompt', {'prompt_title': prompt_title}, namespace='/')
 
 @bp.route('/room/<room_uuid>', methods=['GET'])
 def room_page(room_uuid):
