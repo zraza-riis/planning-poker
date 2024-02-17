@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "app"
+name = "planning_poker"
 version = "0.1.0"
-description = "A simple Flask template with built in SQLite database and login support"
+description = "A simple planning poker app for WinHacks 2024"
 authors = ["Jeremie Bornais <jeremiejbornais@gmail.com>"]
 license = "MIT"
 readme = "README.md"
