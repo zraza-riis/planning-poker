@@ -13,7 +13,7 @@
     <meta property="og:title" content="Planning Poker" />
     <meta property="og:description" content="Estimate your tasks with precision and collaboration!" />
     <meta property="og:type" content="website" />
-    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='favicon.ico') }}" />
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}" />
 
     <!--Style-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
@@ -26,7 +26,8 @@
 <body class="bg-dark-subtle" data-bs-theme="dark">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary-subtle">
         <div class="container-fluid">
-            <a class="navbar-brand ms-5" href="{{ url_for('main.index') }}" style="font-weight: 700;">Planning Poker</a>
+            <a class="navbar-brand ms-5" href="{{ url_for('main.index') }}" style="font-weight: 700;">
+                <img style="width: 55px;" src="{{ url_for('static', filename='icon.png') }}">&nbsp&nbsp&nbspPlanning Poker</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
