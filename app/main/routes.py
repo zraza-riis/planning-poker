@@ -128,6 +128,16 @@ def handle_new_active_prompt(data):
     else:
         print("Room or Prompt not found.")
 
+def get_estimations_for_active_prompt(room_uuid):
+    room = Room.query.filter_by(uuid=room_uuid).first()
+
+    if room and room.active_prompt_id:
+        estimations = Estimation.query.filter_by(room_id=room.id, prompt_id=room.active_prompt_id).all()
+        estimations_dict = {estimation.player.name: estimation.value for estimation in estimations}
+        return estimations_dict
+
+    return {}
+
 @socketio.on('new_estimation_submitted', namespace='/')
 def handle_new_estimation(data):
     room_uuid = data['room_uuid']
@@ -142,7 +152,9 @@ def handle_new_estimation(data):
         db.session.add(new_estimation)
         db.session.commit()
 
-        socketio.emit('new_estimation', {'player_name': player_name, 'estimation_value': estimation_value}, namespace='/')
+        estimations_dict = get_estimations_for_active_prompt(room_uuid)
+
+        socketio.emit('new_estimation', {'player_name': player_name, 'estimation_value': estimation_value, 'estimations': estimations_dict}, namespace='/')
     else:
         print("Room or Prompt not found.")
 

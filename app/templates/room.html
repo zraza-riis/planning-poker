@@ -180,7 +180,7 @@
 
     // Handle a new estimation for the player being set
     socket.on('new_estimation', function(data) {
-        console.log('New estimation submitted:', data.player_name, data.estimation_value);
+        console.log('New estimation submitted:', data.player_name, data.estimation_value, data.estimations);
         updateEstimationsList(data.player_name, data.estimation_value);
     });
 
