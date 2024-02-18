@@ -30,7 +30,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary-subtle">
         <div class="container-fluid">
             <a class="navbar-brand ms-5" href="{{ url_for('main.index') }}" style="font-weight: 700;">
-                <img style="width: 55px;" src="{{ url_for('static', filename='icon.png') }}">&nbsp&nbsp&nbspPlanning Poker</a>
+                <img style="width: 55px;" src="{{ url_for('static', filename='icon.png') }}">&nbsp&nbsp&nbspPlanning
+                Poker</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -53,13 +54,13 @@
                 <span class="navbar-text me-5">
                     <button id="invitebtn" onclick="invitePlayers()" class="btn btn-primary">+ Invite Players</button>
                     <script>
-                        function invitePlayers(){
+                        function invitePlayers() {
                             let invitebtn = document.getElementById('invitebtn');
                             navigator.clipboard.writeText('{{ room.join_link }}');
                             invitebtn.classList.remove('btn-primary');
                             invitebtn.classList.add('btn-secondary');
                             invitebtn.innerText = "Link Copied To Clipboard!";
-                            setTimeout(()=>{
+                            setTimeout(() => {
                                 invitebtn.classList.add('btn-primary');
                                 invitebtn.classList.remove('btn-secondary');
                                 invitebtn.innerText = "+ Invite Players";
@@ -101,269 +102,303 @@
     {% endif %}
     {% endwith %}
 
-<style>
+    <style>
+        .hidden {
+            display: none;
+        }
 
-    .hidden{
-        display: none;
-    }
+        #gamearea {
+            display: flex;
+            flex-direction: column;
+        }
 
-    #gamearea {
-        display: flex;
-        flex-direction: column;
-    }
-    #gamearea .content {
-        flex: 1;
-    }
+        #gamearea .content {
+            flex: 1;
+        }
 
-    #choices .col.poker {
-        height: 125px;
-        margin: 10px;
-        border-radius: 7px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 2.5rem;
-    }
+        #choices .col.poker {
+            height: 125px;
+            margin: 10px;
+            border-radius: 7px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+        }
 
-    .poker-inactive {
-        background-color: rgb(32, 85, 130);
-    }
+        .poker-inactive {
+            background-color: rgb(32, 85, 130);
+        }
 
-    #choices .col.poker-inactive:hover {
-        background-color: rgb(63, 114, 159);
-    }
+        #choices .col.poker-inactive:hover {
+            background-color: rgb(63, 114, 159);
+        }
 
-    .poker-active {
-        background-color: rgb(74, 136, 189);
-    }
-</style>
+        .poker-active {
+            background-color: rgb(74, 136, 189);
+        }
+    </style>
 
-<div class="row" style="max-width: 100%;">
-    <div class="col-9">
-        <div class="container text-center" style="height: 82vh;" id="gamearea">
-            <div class="content">
-                <br>
-                <h5>Connected Users:</h5>
-                <ul id="connectedPlayersList"></ul>
-            
-                <br>
-                <h5>Estimations:</h5>
-                <ul id="estimationsList"></ul>
-            </div>
-
-            <div class="row" id="choices">
-                <div class="col"></div>
-                <div class="col"></div>
-                <div id="poker-0" class="col poker poker-inactive" onclick="newEstimationClick(0)">
-                    <p>0</p>
+    <div class="row" style="max-width: 100%;">
+        <div class="col-9">
+            <div class="container text-center" style="height: 82vh;" id="gamearea">
+                <div class="content">
+                    <br>
+                    <h5>Connected Users: <span id="connectedPlayersList"></span></h5>
+                    <br>
+                    <h5>Estimations: 
+                        <span id="estimationsHidden" class="">Hidden <button onclick="showEstimations()" class="btn btn-primary">Show</button></span>
+                        <span id="estimationsShowing"  class="hidden">
+                            <span id="estimationsList"></span>
+                            <button onclick="hideEstimations()" class="btn btn-danger">Hide</button>
+                        </span>
+                    </h5>
                 </div>
-                <div id="poker-1" class="col poker poker-inactive" onclick="newEstimationClick(1)">
-                    <p>1</p>
+                <script>
+                    function showEstimations(){
+                        let estimationsHidden = document.getElementById('estimationsHidden');
+                        let estimationsShowing = document.getElementById('estimationsShowing');
+                        estimationsHidden.classList.add('hidden');
+                        estimationsShowing.classList.remove('hidden');
+                    }
+                    function hideEstimations(){
+                        let estimationsHidden = document.getElementById('estimationsHidden');
+                        let estimationsShowing = document.getElementById('estimationsShowing');
+                        estimationsHidden.classList.remove('hidden');
+                        estimationsShowing.classList.add('hidden');
+                    }
+                </script>
+
+                <div class="row" id="choices">
+                    <div class="col"></div>
+                    <div class="col"></div>
+                    <div id="poker-0" class="col poker poker-inactive" onclick="newEstimationClick(0)">
+                        <p>0</p>
+                    </div>
+                    <div id="poker-1" class="col poker poker-inactive" onclick="newEstimationClick(1)">
+                        <p>1</p>
+                    </div>
+                    <div id="poker-2" class="col poker poker-inactive" onclick="newEstimationClick(2)">
+                        <p>2</p>
+                    </div>
+                    <div id="poker-3" class="col poker poker-inactive" onclick="newEstimationClick(3)">
+                        <p>3</p>
+                    </div>
+                    <div id="poker-5" class="col poker poker-inactive" onclick="newEstimationClick(5)">
+                        <p>5</p>
+                    </div>
+                    <div id="poker-8" class="col poker poker-inactive" onclick="newEstimationClick(8)">
+                        <p>8</p>
+                    </div>
+                    <div id="poker-13" class="col poker poker-inactive" onclick="newEstimationClick(13)">
+                        <p>13</p>
+                    </div>
+                    <div class="col"></div>
+                    <div class="col"></div>
                 </div>
-                <div id="poker-2" class="col poker poker-inactive" onclick="newEstimationClick(2)">
-                    <p>2</p>
-                </div>
-                <div id="poker-3" class="col poker poker-inactive" onclick="newEstimationClick(3)">
-                    <p>3</p>
-                </div>
-                <div id="poker-5" class="col poker poker-inactive" onclick="newEstimationClick(5)">
-                    <p>5</p>
-                </div>
-                <div id="poker-8" class="col poker poker-inactive" onclick="newEstimationClick(8)">
-                    <p>8</p>
-                </div>
-                <div id="poker-13" class="col poker poker-inactive" onclick="newEstimationClick(13)">
-                    <p>13</p>
-                </div>
-                <div class="col"></div>
-                <div class="col"></div>
             </div>
         </div>
-    </div>
-    <div class="col-3 bg-body" style="height: 82vh; overflow-y: auto; overflow-x: hidden;">
-        <div class="container">
-            <br>
-            <h1 class="text-center">Issues</h1>
-            <br>
-            <div id="prompts">
-            </div>
-            <p class="text-center">
+        <div class="col-3 bg-body" style="height: 82vh; overflow-y: auto; overflow-x: hidden;">
+            <div class="container">
                 <br>
-                <button id="newissuebtn" class="btn btn-secondary" onclick="showissueform()">+ New Issue</button>
+                <h1 class="text-center">Issues</h1>
+                <br>
+                <div id="prompts">
+                </div>
+                <p class="text-center">
+                    <br>
+                    <button id="newissuebtn" class="btn btn-secondary" onclick="showissueform()">+ New Issue</button>
                 <form id="promptForm" style="border-radius: 5px;" class="p-3 bg-body-secondary hidden">
-                    <input type="text" class="form-control" id="promptInput" placeholder="Enter title for issue" required>
-                    <textarea id="promptDescription" class="form-control" placeholder="Enter your description"></textarea>
+                    <input type="text" class="form-control" id="promptInput" placeholder="Enter title for issue"
+                        required>
+                    <textarea id="promptDescription" class="form-control"
+                        placeholder="Enter your description"></textarea>
                     <button type="submit" class="form-control btn btn-primary btn-sm">Submit</button>
                 </form>
-            </p>
+                </p>
+            </div>
         </div>
     </div>
-</div>
-<script>
-    function showissueform(){
-        let newissuebtn = document.getElementById('newissuebtn');
-        let promptForm = document.getElementById('promptForm');
-        newissuebtn.classList.add('hidden');
-        promptForm.classList.remove('hidden');
-    }
-
-    function submitNewIssue(){
-        alert('New issue submitted')
-    }
-
-</script>
-
-<script type="text/javascript">
-    var socket = io.connect();
-
-    socket.on('connect', function() {
-        console.log('Connected to server');
-        socket.emit('join_room', {'room_uuid': '{{ room.uuid }}'});
-    });
-
-    socket.on('disconnect', function() {
-        console.log('Disconnected from server');
-        socket.emit('leave_room', {'room_uuid': '{{ room.uuid }}'});
-    });
-
-    socket.on('new_room', function(data) {
-        console.log('New room created:', data.room_uuid);
-    });
-
-    // Handle a new Prompt getting created
-    socket.on('new_prompt', function(data) {
-        console.log('New prompt submitted:', data.prompt_id, data.prompt_title, data.prompt_description);
-        prompthtml = createPromptHTML(data.prompt_title, data.prompt_description, data.prompt_id);
-        document.getElementById('prompts').innerHTML+=prompthtml;
-        let newissuebtn = document.getElementById('newissuebtn');
-        let promptForm = document.getElementById('promptForm');
-        newissuebtn.classList.remove('hidden');
-        promptForm.classList.add('hidden');
-    });
-
-    socket.on('player_joined', function(data) {
-        console.log('Player joined');
-        console.log('Player name:', data.player_name);
-        console.log('Players:', data.players);
-        console.log('Active prompt id:', data.active_prompt_id);
-        console.log('Prompt_ids:', data.prompt_ids);
-        console.log('Prompt titles:', data.prompt_titles);
-        console.log('Prompt descs:', data.prompt_descriptions);
-        updateConnectedPlayersList(data.players);
-    });
-
-    socket.on('player_left', function(data) {
-        console.log('Player left:', data.player_name);
-        updateConnectedPlayersList(data.players);
-    });
-
-    // Handle a new active prompt for the room being set
-    socket.on('active_prompt_changed', function(data) {
-        let prompt_id = data.prompt_id;
-        let active_prompt = document.getElementById(`prompt-${prompt_id}`);
-        let active_prompt_btn = document.getElementById(`prompt-btn-${prompt_id}`);
-        let prompts = document.getElementsByClassName('prompt');
-        let prompt_btns = document.getElementsByClassName('prompt-btn');
-        
-        for(let prompt of prompts){
-            prompt.classList.remove('bg-body-secondary');
+    <script>
+        function showissueform() {
+            let newissuebtn = document.getElementById('newissuebtn');
+            let promptForm = document.getElementById('promptForm');
+            newissuebtn.classList.add('hidden');
+            promptForm.classList.remove('hidden');
         }
-        for(let btn of prompt_btns){
-            btn.classList.remove('btn-secondary');
-            btn.classList.add('btn-primary');
-            btn.innerText = 'Vote This Issue'
+
+        function submitNewIssue() {
+            alert('New issue submitted')
         }
-        active_prompt.classList.add('bg-body-secondary');
-        active_prompt_btn.classList.remove('btn-primary');
-        active_prompt_btn.classList.add('btn-secondary');
-        active_prompt_btn.innerText = "Voting Now..."
-        console.log('New active prompt:', data.prompt_id, data.prompt_title, data.prompt_description);
-    });
 
-    // Handle a new estimation for the player being set
-    socket.on('new_estimation', function(data) {
-        console.log('New estimation submitted:', data.player_name, data.estimation_value, data.estimations);
-        updateEstimationsList(data.estimations);
-    });
+    </script>
 
-    document.getElementById('promptForm').addEventListener('submit', function(event) {
-        event.preventDefault();
+    <script type="text/javascript">
+        var socket = io.connect();
 
-        var promptInput = document.getElementById('promptInput').value;
-        var promptDescription = document.getElementById('promptDescription').value;
-
-        socket.emit('new_prompt', {'room_uuid': '{{ room.uuid }}', 'prompt_title': promptInput, 'prompt_description': promptDescription});
-
-        document.getElementById('promptInput').value = '';
-        document.getElementById('promptDescription').value = '';
-
-    });
-
-    // Call this function when requesting a new active prompt
-    function voteActivePrompt(prompt_id) {
-        socket.emit('new_active_prompt', {'room_uuid': '{{ room.uuid }}', 'prompt_id': prompt_id})
-    }
-
-
-    function newEstimationClick(estimationValue){
-        console.log(`estimation ${estimationValue} clicked`);
-        let pokers = document.getElementsByClassName('poker');
-        for(let poker of pokers){
-            poker.classList.remove('poker-active');
-            poker.classList.add('poker-inactive');
-        }
-        let active_poker = document.getElementById(`poker-${estimationValue}`);
-        active_poker.classList.add('poker-active');
-        active_poker.classList.remove('poker-inactive');
-        newEstimationSubmitted(estimationValue);
-    }
-
-    // Call this function when submitting a new estimation
-    function newEstimationSubmitted(estimationValue) {
-        console.log(`estimation ${estimationValue} submitted`);
-        socket.emit('new_estimation_submitted', {'room_uuid': '{{ room.uuid }}', 'estimation_value': estimationValue})
-    }
-
-    document.addEventListener('keydown', function(event) {
-        // Check if CTRL key is pressed along with 'W' key
-        if (event.ctrlKey && event.key === 'w') {
-            socket.emit('leave_room', {'room_uuid': '{{ room.uuid }}'});    
-        }
-    });
-
-    window.addEventListener('beforeunload', function (event) {
-        socket.emit('leave_room', {'room_uuid': '{{ room.uuid }}'});
-        
-        var confirmationMessage = 'Are you sure you want to leave this page?';
-        (event || window.event).returnValue = confirmationMessage; // Gecko and Trident
-        return confirmationMessage; // Gecko and WebKit
-    });
-
-
-    function updateConnectedPlayersList(players) {
-        var playersListElement = document.getElementById('connectedPlayersList');
-        playersListElement.innerHTML = '';
-
-        players.forEach(function(player) {
-            var listItem = document.createElement('li');
-            listItem.textContent = player;
-            playersListElement.appendChild(listItem);
+        socket.on('connect', function () {
+            console.log('Connected to server');
+            socket.emit('join_room', { 'room_uuid': '{{ room.uuid }}' });
         });
-        let numUsers = document.getElementById('numUsers');
-        numUsers.innerText = players.length;
-    }
 
-    function updateEstimationsList(estimations) {
-        var estimationsListElement = document.getElementById('estimationsList');
-        markup = ""
-        for(let key in estimations){
-            markup+=`<li>${key} - ${estimations[key]}</li>`
+        socket.on('disconnect', function () {
+            console.log('Disconnected from server');
+            socket.emit('leave_room', { 'room_uuid': '{{ room.uuid }}' });
+        });
+
+        socket.on('new_room', function (data) {
+            console.log('New room created:', data.room_uuid);
+        });
+
+        // Handle a new Prompt getting created
+        socket.on('new_prompt', function (data) {
+            console.log('New prompt submitted:', data.prompt_id, data.prompt_title, data.prompt_description);
+            prompthtml = createPromptHTML(data.prompt_title, data.prompt_description, data.prompt_id);
+            document.getElementById('prompts').innerHTML += prompthtml;
+            let newissuebtn = document.getElementById('newissuebtn');
+            let promptForm = document.getElementById('promptForm');
+            newissuebtn.classList.remove('hidden');
+            promptForm.classList.add('hidden');
+        });
+
+        function updatePromptList(prompt_ids, prompt_titles, prompt_descriptions, active_prompt_id) {
+            console.log('initializing prompts', prompt_ids, prompt_titles, prompt_descriptions, active_prompt_id)
+            document.getElementById('prompts').innerHTML = "";
+            for (let i = 0; i < prompt_ids.length; i++) {
+                prompthtml = createPromptHTML(prompt_titles[i], prompt_descriptions[i], prompt_ids[i]);
+                document.getElementById('prompts').innerHTML += prompthtml;
+            }
+            let active_prompt = document.getElementById(`prompt-${active_prompt_id}`);
+            let active_prompt_btn = document.getElementById(`prompt-btn-${active_prompt_id}`);
+            active_prompt.classList.add('bg-body-secondary');
+            active_prompt_btn.classList.remove('btn-primary');
+            active_prompt_btn.classList.add('btn-secondary');
+            active_prompt_btn.innerText = "Voting Now..."
         }
-        estimationsListElement.innerHTML = markup
-    }
 
-    function createPromptHTML(issue_name, issue_desc, issue_id){
-        return `
+        socket.on('player_joined', function (data) {
+            console.log('Player joined');
+            console.log('Player name:', data.player_name);
+            console.log('Players:', data.players);
+            console.log('Active prompt id:', data.active_prompt_id);
+            console.log('Prompt_ids:', data.prompt_ids);
+            console.log('Prompt titles:', data.prompt_titles);
+            console.log('Prompt descs:', data.prompt_descriptions);
+            updateConnectedPlayersList(data.players);
+            updatePromptList(data.prompt_ids, data.prompt_titles, data.prompt_descriptions, data.active_prompt_id);
+            fetchEstimations();
+        });
+
+        socket.on('player_left', function (data) {
+            console.log('Player left:', data.player_name);
+            updateConnectedPlayersList(data.players);
+        });
+
+        // Handle a new active prompt for the room being set
+        socket.on('active_prompt_changed', function (data) {
+            let prompt_id = data.prompt_id;
+            let active_prompt = document.getElementById(`prompt-${prompt_id}`);
+            let active_prompt_btn = document.getElementById(`prompt-btn-${prompt_id}`);
+            let prompts = document.getElementsByClassName('prompt');
+            let prompt_btns = document.getElementsByClassName('prompt-btn');
+
+            for (let prompt of prompts) {
+                prompt.classList.remove('bg-body-secondary');
+            }
+            for (let btn of prompt_btns) {
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+                btn.innerText = 'Vote This Issue'
+            }
+            active_prompt.classList.add('bg-body-secondary');
+            active_prompt_btn.classList.remove('btn-primary');
+            active_prompt_btn.classList.add('btn-secondary');
+            active_prompt_btn.innerText = "Voting Now..."
+            console.log('New active prompt:', data.prompt_id, data.prompt_title, data.prompt_description);
+        });
+
+        // Handle a new estimation for the player being set
+        socket.on('new_estimation', function (data) {
+            console.log('New estimation submitted:', data.player_name, data.estimation_value, data.estimations);
+            updateEstimationsList(data.estimations);
+        });
+
+        document.getElementById('promptForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var promptInput = document.getElementById('promptInput').value;
+            var promptDescription = document.getElementById('promptDescription').value;
+
+            socket.emit('new_prompt', { 'room_uuid': '{{ room.uuid }}', 'prompt_title': promptInput, 'prompt_description': promptDescription });
+
+            document.getElementById('promptInput').value = '';
+            document.getElementById('promptDescription').value = '';
+
+        });
+
+        // Call this function when requesting a new active prompt
+        function voteActivePrompt(prompt_id) {
+            socket.emit('new_active_prompt', { 'room_uuid': '{{ room.uuid }}', 'prompt_id': prompt_id })
+        }
+
+
+        function newEstimationClick(estimationValue) {
+            console.log(`estimation ${estimationValue} clicked`);
+            let pokers = document.getElementsByClassName('poker');
+            for (let poker of pokers) {
+                poker.classList.remove('poker-active');
+                poker.classList.add('poker-inactive');
+            }
+            let active_poker = document.getElementById(`poker-${estimationValue}`);
+            active_poker.classList.add('poker-active');
+            active_poker.classList.remove('poker-inactive');
+            newEstimationSubmitted(estimationValue);
+        }
+
+        // Call this function when submitting a new estimation
+        function newEstimationSubmitted(estimationValue) {
+            console.log(`estimation ${estimationValue} submitted`);
+            socket.emit('new_estimation_submitted', { 'room_uuid': '{{ room.uuid }}', 'estimation_value': estimationValue })
+        }
+
+        document.addEventListener('keydown', function (event) {
+            // Check if CTRL key is pressed along with 'W' key
+            if (event.ctrlKey && event.key === 'w') {
+                socket.emit('leave_room', { 'room_uuid': '{{ room.uuid }}' });
+            }
+        });
+
+        window.addEventListener('beforeunload', function (event) {
+            socket.emit('leave_room', { 'room_uuid': '{{ room.uuid }}' });
+
+            var confirmationMessage = 'Are you sure you want to leave this page?';
+            (event || window.event).returnValue = confirmationMessage; // Gecko and Trident
+            return confirmationMessage; // Gecko and WebKit
+        });
+
+
+        function updateConnectedPlayersList(players) {
+            var playersListElement = document.getElementById('connectedPlayersList');
+            playersListElement.innerHTML = '';
+            for (let player of players) {
+                playersListElement.innerText += ' ' + player + ','
+            }
+            playersListElement.innerText = playersListElement.innerText.slice(0, -1)
+            let numUsers = document.getElementById('numUsers');
+            numUsers.innerText = players.length;
+        }
+
+        function updateEstimationsList(estimations) {
+            var estimationsListElement = document.getElementById('estimationsList');
+            markup = ""
+            for (let key in estimations) {
+                markup += `(${key} - ${estimations[key]}), `
+            }
+            estimationsListElement.innerHTML = markup.slice(0, -2)
+        }
+
+        function createPromptHTML(issue_name, issue_desc, issue_id) {
+            return `
         <div class="card mt-2 prompt" id="prompt-${issue_id}">
             <div class="card-body">
                 <h5 class="card-title">${issue_name}</h5>
@@ -372,9 +407,34 @@
             </div>
         </div>
         `
-    }
-    
-</script>
+        }
+
+        async function fetchEstimations() {
+            try {
+                let room_uuid = `{{ room.uuid }}`
+                const response = await fetch(`{{ url_for('main.get_estimations', room_uuid=room_uuid) }}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                        // Add any other headers if needed
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                // Do something with the received data (estimations)
+                console.log(data); // Assuming data is an object containing estimations
+                return data;
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+                throw error;
+            }
+        }
+
+    </script>
 
     <!-- JS used by Bootstrap -->
     <script src="{{ url_for('static', filename='bootstrap.5.3.2.bundle.min.js') }}"></script>
