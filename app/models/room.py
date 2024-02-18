@@ -9,6 +9,9 @@ class Room(db.Model):
     join_link = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    active_prompt_id = db.Column(db.Integer, db.ForeignKey('prompt.id'))
+    active_prompt = db.relationship('Prompt', foreign_keys=[active_prompt_id], backref='active_in_room', uselist=False)
+
     def __repr__(self):
         return f'<Room {self.name}>'
     

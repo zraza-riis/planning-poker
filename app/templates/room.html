@@ -158,7 +158,7 @@
 
     // Handle a new Prompt getting created
     socket.on('new_prompt', function(data) {
-        console.log('New prompt submitted:', data.prompt_title, data.prompt_description, data.prompt_id);
+        console.log('New prompt submitted:', data.prompt_id, data.prompt_title, data.prompt_description);
     });
 
     socket.on('player_joined', function(data) {
@@ -169,6 +169,11 @@
     socket.on('player_left', function(data) {
         console.log('Player left:', data.player_name);
         updateConnectedPlayersList(data.players);
+    });
+
+    // Handle a new active prompt for the room being set
+    socket.on('active_prompt_changed', function(data) {
+        console.log('New active prompt:', data.prompt_id, data.prompt_title, data.prompt_description);
     });
 
     document.getElementById('promptForm').addEventListener('submit', function(event) {
@@ -183,6 +188,11 @@
         document.getElementById('promptDescription').value = '';
 
     });
+
+    // Call this function when requesting a new active prompt
+    function voteActivePrompt(prompt_id) {
+        socket.emit('new_active_prompt', {'room_uuid': '{{ room.uuid }}', 'prompt_id': prompt_id})
+    }
 
     function updateConnectedPlayersList(players) {
         var playersListElement = document.getElementById('connectedPlayersList');

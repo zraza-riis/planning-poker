@@ -112,3 +112,21 @@ def handle_new_prompt(data):
 
     socketio.emit('new_prompt', {'prompt_id': new_prompt.id, 'prompt_title': prompt_title, 'prompt_description': prompt_description}, namespace='/')
 
+@socketio.on('new_active_prompt', namespace='/')
+def handle_new_active_prompt(data):
+    room_uuid = data['room_uuid']
+    prompt_id = data['prompt_id']
+
+    room = Room.query.filter_by(uuid=room_uuid).first_or_404()
+    prompt = Prompt.query.get(prompt_id)
+
+    if room and prompt:
+        room.active_prompt_id = prompt.id
+        db.session.commit()
+
+        socketio.emit('active_prompt_changed', {'prompt_id': prompt_id, 'prompt_title': prompt.title, 'prompt_description': prompt.description}, namespace='/')
+    else:
+        print("Room or Prompt not found.")
+
+
+
