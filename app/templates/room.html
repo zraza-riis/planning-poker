@@ -204,9 +204,21 @@
         socket.emit('new_estimation_submitted', {'room_uuid': '{{ room.uuid }}', 'estimation_value': estimationValue})
     }
 
-    window.addEventListener('beforeunload', function(event) {
-        socket.emit('leave_room', {'room_uuid': '{{ room.uuid }}'});
+    document.addEventListener('keydown', function(event) {
+        // Check if CTRL key is pressed along with 'W' key
+        if (event.ctrlKey && event.key === 'w') {
+            socket.emit('leave_room', {'room_uuid': '{{ room.uuid }}'});    
+        }
     });
+
+    window.addEventListener('beforeunload', function (event) {
+        socket.emit('leave_room', {'room_uuid': '{{ room.uuid }}'});
+        
+        var confirmationMessage = 'Are you sure you want to leave this page?';
+        (event || window.event).returnValue = confirmationMessage; // Gecko and Trident
+        return confirmationMessage; // Gecko and WebKit
+    });
+
 
     function updateConnectedPlayersList(players) {
         var playersListElement = document.getElementById('connectedPlayersList');
