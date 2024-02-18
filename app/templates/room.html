@@ -270,10 +270,12 @@
             }
             let active_prompt = document.getElementById(`prompt-${active_prompt_id}`);
             let active_prompt_btn = document.getElementById(`prompt-btn-${active_prompt_id}`);
-            active_prompt.classList.add('bg-body-secondary');
-            active_prompt_btn.classList.remove('btn-primary');
-            active_prompt_btn.classList.add('btn-secondary');
-            active_prompt_btn.innerText = "Voting Now..."
+            if(active_prompt != null){
+                active_prompt.classList.add('bg-body-secondary');
+                active_prompt_btn.classList.remove('btn-primary');
+                active_prompt_btn.classList.add('btn-secondary');
+                active_prompt_btn.innerText = "Voting Now..."
+            }
         }
 
         socket.on('player_joined', function (data) {
