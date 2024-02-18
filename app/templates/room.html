@@ -49,6 +49,7 @@
             
                 <form id="promptForm">
                     <input type="text" id="promptInput" placeholder="Enter your prompt" required>
+                    <textarea id="promptDescription" placeholder="Enter your description"></textarea>
                     <button type="submit">Submit</button>
                 </form>
                 <br>
@@ -157,7 +158,7 @@
 
     // Handle a new Prompt getting created
     socket.on('new_prompt', function(data) {
-        console.log('New prompt submitted:', data.prompt_title);
+        console.log('New prompt submitted:', data.prompt_title, data.prompt_description, data.prompt_id);
     });
 
     socket.on('player_joined', function(data) {
@@ -174,10 +175,12 @@
         event.preventDefault();
 
         var promptInput = document.getElementById('promptInput').value;
+        var promptDescription = document.getElementById('promptDescription').value;
 
-        socket.emit('new_prompt', {'room_uuid': '{{ room.uuid }}', 'prompt_title': promptInput});
+        socket.emit('new_prompt', {'room_uuid': '{{ room.uuid }}', 'prompt_title': promptInput, 'prompt_description': promptDescription});
 
         document.getElementById('promptInput').value = '';
+        document.getElementById('promptDescription').value = '';
 
     });
 

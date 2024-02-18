@@ -100,14 +100,15 @@ def get_connected_players(room_uuid):
 def handle_new_prompt(data):
     room_uuid = data['room_uuid']
     prompt_title = data['prompt_title']
+    prompt_description = data['prompt_description']
 
-    print(f"Received new_prompt in room {room_uuid}: {prompt_title}")
+    print(f"Received new_prompt in room {room_uuid}: {prompt_title} {prompt_description}")
 
     room = Room.query.filter_by(uuid=room_uuid).first_or_404()
 
-    new_prompt = Prompt(title=prompt_title)
+    new_prompt = Prompt(title=prompt_title, description=prompt_description)
     db.session.add(new_prompt)
     db.session.commit()
 
-    socketio.emit('new_prompt', {'prompt_title': prompt_title}, namespace='/')
+    socketio.emit('new_prompt', {'prompt_id': new_prompt.id, 'prompt_title': prompt_title, 'prompt_description': prompt_description}, namespace='/')
 
