@@ -242,7 +242,7 @@
     });
 
     socket.on('player_joined', function(data) {
-        console.log('Player joined:', data.player_name);
+        console.log('Player joined:', data.player_name, data.players, data.active_room_id, data.prompt_ids, data.prompt_titles, data.prompt_descriptions);
         updateConnectedPlayersList(data.players);
     });
 
@@ -317,6 +317,22 @@
         console.log(`estimation ${estimationValue} submitted`);
         socket.emit('new_estimation_submitted', {'room_uuid': '{{ room.uuid }}', 'estimation_value': estimationValue})
     }
+
+    document.addEventListener('keydown', function(event) {
+        // Check if CTRL key is pressed along with 'W' key
+        if (event.ctrlKey && event.key === 'w') {
+            socket.emit('leave_room', {'room_uuid': '{{ room.uuid }}'});    
+        }
+    });
+
+    window.addEventListener('beforeunload', function (event) {
+        socket.emit('leave_room', {'room_uuid': '{{ room.uuid }}'});
+        
+        var confirmationMessage = 'Are you sure you want to leave this page?';
+        (event || window.event).returnValue = confirmationMessage; // Gecko and Trident
+        return confirmationMessage; // Gecko and WebKit
+    });
+
 
     function updateConnectedPlayersList(players) {
         var playersListElement = document.getElementById('connectedPlayersList');
