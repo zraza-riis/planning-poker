@@ -9,8 +9,11 @@ class Room(db.Model):
     join_link = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    prompts = db.relationship('Prompt', backref='room', lazy=True, cascade='all, delete-orphan', foreign_keys="[Prompt.room_id, Prompt.room_id]")
+
     active_prompt_id = db.Column(db.Integer, db.ForeignKey('prompt.id'))
     active_prompt = db.relationship('Prompt', foreign_keys=[active_prompt_id], backref='active_in_room', uselist=False)
+
 
     def __repr__(self):
         return f'<Room {self.name}>'
@@ -45,7 +48,8 @@ class Prompt(db.Model):
     title = db.Column(db.String(248), nullable=False)
     description = db.Column(db.String(512), nullable=True)
 
-    estimations = db.relationship('Estimation', back_populates='prompt', foreign_keys='Estimation.prompt_id', lazy=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    estimations = db.relationship('Estimation', back_populates='prompt', foreign_keys='[Estimation.prompt_id, Estimation.room_id]', lazy=True)
 
     def __repr__(self):
         return f'<Prompt {self.title}>'
