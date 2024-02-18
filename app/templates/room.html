@@ -242,7 +242,13 @@
     });
 
     socket.on('player_joined', function(data) {
-        console.log('Player joined:', data.player_name, data.players, data.active_room_id, data.prompt_ids, data.prompt_titles, data.prompt_descriptions);
+        console.log('Player joined');
+        console.log('Player name:', data.player_name);
+        console.log('Players:', data.players);
+        console.log('Active prompt id:', data.active_prompt_id);
+        console.log('Prompt_ids:', data.prompt_ids);
+        console.log('Prompt titles:', data.prompt_titles);
+        console.log('Prompt descs:', data.prompt_descriptions);
         updateConnectedPlayersList(data.players);
     });
 

@@ -79,12 +79,12 @@ def handle_join_room(data):
     db.session.add(player)
     db.session.commit()
 
-    prompts = Prompt.query.filter_by(room_id=room_uuid).all()
+    prompts = Prompt.query.filter_by(room_id=room.id).all()
     prompt_ids = [prompt.id for prompt in prompts]
     prompt_titles = [prompt.title for prompt in prompts]
     prompt_descriptions = [prompt.description for prompt in prompts]
 
-    socketio.emit('player_joined', {'player_name': player_name, 'players': get_connected_players(room_uuid), 'active_room_id': room.active_prompt_id, 'prompt_ids': prompt_ids, 'prompt_titles': prompt_titles, 'prompt_descriptions': prompt_descriptions}, namespace='/')
+    socketio.emit('player_joined', {'player_name': player_name, 'players': get_connected_players(room_uuid), 'active_prompt_id': room.active_prompt_id, 'prompt_ids': prompt_ids, 'prompt_titles': prompt_titles, 'prompt_descriptions': prompt_descriptions}, namespace='/')
 
 @socketio.on('leave_room', namespace='/')
 def handle_leave_room(data):
