@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, url_for, request, redirect
+from flask import render_template, jsonify, url_for, request, redirect, session
 from flask_socketio import emit, join_room, leave_room
 from app.main import bp
 import uuid
@@ -42,8 +42,18 @@ def join_room(room_uuid):
         db.session.add(player)
         db.session.commit()
 
+        session['player_name'] = display_name
+
         return redirect(url_for('main.room_page', room_uuid=room_uuid))
     return render_template("join_room.html", room=room)
+
+@bp.route('/room/<room_uuid>', methods=['GET'])
+def room_page(room_uuid):
+    room = Room.query.filter_by(uuid=room_uuid).first_or_404()
+
+    join_room(room_uuid)
+
+    return render_template('room.html', room=room)
 
 @socketio.on('connect', namespace='/')
 def handle_connect():
@@ -52,6 +62,39 @@ def handle_connect():
 @socketio.on('disconnect', namespace='/')
 def handle_disconnect():
     print('Client disconnected')
+    
+@socketio.on('join_room', namespace='/')
+def handle_join_room(data):
+    room_uuid = data['room_uuid']
+    player_name = session.get('player_name', 'Anonymous')
+
+    room = Room.query.filter_by(uuid=room_uuid).first_or_404()
+
+    player = Player.query.filter_by(name=player_name, room=room).first_or_404()
+    db.session.add(player)
+    db.session.commit()
+
+    socketio.emit('player_joined', {'player_name': player_name, 'players': get_connected_players(room_uuid)}, namespace='/')
+
+@socketio.on('leave_room', namespace='/')
+def handle_leave_room(data):
+    room_uuid = data['room_uuid']
+    player_name = session.get('player_name', 'Anonymous')
+
+    room = Room.query.filter_by(uuid=room_uuid).first_or_404()
+
+    player = Player.query.filter_by(name=player_name, room=room).first()
+    if player:
+        db.session.delete(player)
+        db.session.commit()
+
+    socketio.emit('player_left', {'player_name': player_name, 'players': get_connected_players(room_uuid)}, namespace='/')
+
+def get_connected_players(room_uuid):
+    room = Room.query.filter_by(uuid=room_uuid).first()
+    if room:
+        return [player.name for player in room.players]
+    return []
 
 @socketio.on('new_prompt', namespace='/')
 def handle_new_prompt(data):
@@ -68,11 +111,3 @@ def handle_new_prompt(data):
 
     socketio.emit('new_prompt', {'prompt_title': prompt_title}, namespace='/')
 
-@bp.route('/room/<room_uuid>', methods=['GET'])
-def room_page(room_uuid):
-    room = Room.query.filter_by(uuid=room_uuid).first_or_404()
-    print(room)
-
-    join_room(room_uuid)
-
-    return render_template('room.html', room=room)

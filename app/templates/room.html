@@ -4,7 +4,8 @@
 <div class="container mt-5">
     <h1>You have joined room {{ room.name }}</h1>
     <h4>Invite your team members with the following link: {{ room.join_link }}</h4>
-    <h5>Connected Users: {{ room.players }}</h5>
+    <h5>Connected Users:</h5>
+    <ul id="connectedPlayersList"></ul>
 
     <form id="promptForm">
         <input type="text" id="promptInput" placeholder="Enter your prompt" required>
@@ -16,10 +17,12 @@
     
         socket.on('connect', function() {
             console.log('Connected to server');
+            socket.emit('join_room', {'room_uuid': '{{ room.uuid }}'});
         });
     
         socket.on('disconnect', function() {
             console.log('Disconnected from server');
+            socket.emit('leave_room', {'room_uuid': '{{ room.uuid }}'});
         });
     
         socket.on('new_room', function(data) {
@@ -29,6 +32,16 @@
         // Handle a new Prompt getting created
         socket.on('new_prompt', function(data) {
             console.log('New prompt submitted:', data.prompt_title);
+        });
+
+        socket.on('player_joined', function(data) {
+            console.log('Player joined:', data.player_name);
+            updateConnectedPlayersList(data.players);
+        });
+
+        socket.on('player_left', function(data) {
+            console.log('Player left:', data.player_name);
+            updateConnectedPlayersList(data.players);
         });
 
         document.getElementById('promptForm').addEventListener('submit', function(event) {
@@ -41,6 +54,17 @@
             document.getElementById('promptInput').value = '';
 
         });
+
+        function updateConnectedPlayersList(players) {
+            var playersListElement = document.getElementById('connectedPlayersList');
+            playersListElement.innerHTML = '';
+
+            players.forEach(function(player) {
+                var listItem = document.createElement('li');
+                listItem.textContent = player;
+                playersListElement.appendChild(listItem);
+            });
+        }
 
         
     </script>

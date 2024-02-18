@@ -39,7 +39,8 @@ class Estimation(db.Model):
     
 class Prompt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(240), nullable=False)
+    title = db.Column(db.String(248), nullable=False)
+    description = db.Column(db.String(512), nullable=True)
 
     estimations = db.relationship('Estimation', back_populates='prompt', foreign_keys='Estimation.prompt_id', lazy=True)
 
