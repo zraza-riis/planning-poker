@@ -1,28 +1,133 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+
+    .hidden{
+        display: none;
+    }
+
+    #gamearea {
+        display: flex;
+        flex-direction: column;
+    }
+    #gamearea .content {
+        flex: 1;
+    }
+
+    #choices .col.poker {
+        height: 125px;
+        background-color: rgb(32, 85, 130);
+        margin: 10px;
+        border-radius: 7px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2.5rem;
+    }
+
+    #choices .col.poker:hover {
+        background-color: rgb(63, 114, 159);
+    }
+</style>
+
 <div class="row" style="max-width: 100%;">
     <div class="col-9">
-        
-        <div class="container text-center">
-            <br>
-            <h1>You have joined room "{{ room.name }}"</h1>
-            <br>
-            <h4>Invite your team members with the following link: </h4>
-            <p>
-                <a href="{{ room.join_link }}">{{ room.join_link }}</a>
-            </p>
-            <br>
-            <h5>Connected Users: {{ room.players }}</h5>        
+        <div class="container text-center" style="height: 82vh;" id="gamearea">
+            <div class="content">
+                <br>
+                <h1>You have joined room "{{ room.name }}"</h1>
+                <br>
+                <h4>Invite your team members with the following link: </h4>
+                <p>
+                    <a href="{{ room.join_link }}">{{ room.join_link }}</a>
+                </p>
+                <br>
+                <h5>Connected Users: {{ room.players }}</h5>
+                <br>
+            </div>
+
+            <div class="row" id="choices">
+                <div class="col"></div>
+                <div class="col"></div>
+                <div class="col poker">
+                    <p>0</p>
+                </div>
+                <div class="col poker">
+                    <p>1</p>
+                </div>
+                <div class="col poker">
+                    <p>2</p>
+                </div>
+                <div class="col poker">
+                    <p>3</p>
+                </div>
+                <div class="col poker">
+                    <p>5</p>
+                </div>
+                <div class="col poker">
+                    <p>8</p>
+                </div>
+                <div class="col poker">
+                    <p>13</p>
+                </div>
+                <div class="col"></div>
+                <div class="col"></div>
+            </div>
         </div>
     </div>
-    <div class="col-3 bg-body" style="height: 100rem;">
+    <div class="col-3 bg-body" style="height: 82vh; overflow-y: auto; overflow-x: hidden;">
         <div class="container">
             <br>
             <h1 class="text-center">Issues</h1>
+            <br>
+            <div id="items">
+                <div class="card mt-2 bg-body-secondary">
+                    <div class="card-body">
+                        <h5 class="card-title">Issue Name</h5>
+                        <p class="card-text">This is an example of a short issue description. It should be relatively
+                            short because if it's too long it won't look good.</p>
+                        <a href="#" class="btn btn-sm btn-secondary">Voting Now...</a>
+                    </div>
+                </div>
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <h5 class="card-title">Issue Name</h5>
+                        <p class="card-text">This is an example of a short issue description. It should be relatively
+                            short because if it's too long it won't look good.</p>
+                        <a href="#" class="btn btn-sm btn-primary">Vote This Issue</a>
+                    </div>
+                </div>
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <h5 class="card-title">Issue Name</h5>
+                        <p class="card-text">This is an example of a short issue description. It should be relatively
+                            short because if it's too long it won't look good.</p>
+                        <a href="#" class="btn btn-sm btn-primary">Vote This Issue</a>
+                    </div>
+                </div>
+                <p class="text-center">
+                    <br>
+                    <button id="newissuebtn" class="btn btn-secondary" onclick="newIssueForm();">+ New Issue</button>
+                    <form id="newissueform" style="border-radius: 5px;" class="p-3 bg-body-secondary hidden" onsubmit="submitNewIssue(); return false;">
+                        <input id="issue_title" class="form-control" type="text" placeholder="Enter title for issue">
+                        <br>
+                        <textarea class="form-control" id="issue_description" placeholder="Issue Description"></textarea><br>
+                        <input class="form-control btn btn-primary btn-sm" type="submit" value="Save">
+                    </form>
+                </p>
+            </div>
         </div>
     </div>
 </div>
-<div class="container mt-5">
-</div>
+<script>
+    function newIssueForm(){
+        alert('New issue!')
+    }
+
+    function submitNewIssue(){
+        alert('New issue submitted')
+    }
+
+</script>
 {% endblock %}
