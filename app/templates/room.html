@@ -47,11 +47,6 @@
                 <h5>Connected Users:</h5>
                 <ul id="connectedPlayersList"></ul>
             
-                <form id="promptForm">
-                    <input type="text" id="promptInput" placeholder="Enter your prompt" required>
-                    <textarea id="promptDescription" placeholder="Enter your description"></textarea>
-                    <button type="submit">Submit</button>
-                </form>
                 <br>
                 <h5>Estimations:</h5>
                 <ul id="estimationsList"></ul>
@@ -91,48 +86,26 @@
             <br>
             <h1 class="text-center">Issues</h1>
             <br>
-            <div id="items">
-                <div class="card mt-2 bg-body-secondary">
-                    <div class="card-body">
-                        <h5 class="card-title">Issue Name</h5>
-                        <p class="card-text">This is an example of a short issue description. It should be relatively
-                            short because if it's too long it won't look good.</p>
-                        <a href="#" class="btn btn-sm btn-secondary">Voting Now...</a>
-                    </div>
-                </div>
-                <div class="card mt-2">
-                    <div class="card-body">
-                        <h5 class="card-title">Issue Name</h5>
-                        <p class="card-text">This is an example of a short issue description. It should be relatively
-                            short because if it's too long it won't look good.</p>
-                        <a href="#" class="btn btn-sm btn-primary">Vote This Issue</a>
-                    </div>
-                </div>
-                <div class="card mt-2">
-                    <div class="card-body">
-                        <h5 class="card-title">Issue Name</h5>
-                        <p class="card-text">This is an example of a short issue description. It should be relatively
-                            short because if it's too long it won't look good.</p>
-                        <a href="#" class="btn btn-sm btn-primary">Vote This Issue</a>
-                    </div>
-                </div>
-                <p class="text-center">
-                    <br>
-                    <button id="newissuebtn" class="btn btn-secondary" onclick="newIssueForm();">+ New Issue</button>
-                    <form id="newissueform" style="border-radius: 5px;" class="p-3 bg-body-secondary hidden" onsubmit="submitNewIssue(); return false;">
-                        <input id="issue_title" class="form-control" type="text" placeholder="Enter title for issue">
-                        <br>
-                        <textarea class="form-control" id="issue_description" placeholder="Issue Description"></textarea><br>
-                        <input class="form-control btn btn-primary btn-sm" type="submit" value="Save">
-                    </form>
-                </p>
+            <div id="prompts">
             </div>
+            <p class="text-center">
+                <br>
+                <button id="newissuebtn" class="btn btn-secondary" onclick="showissueform()">+ New Issue</button>
+                <form id="promptForm" style="border-radius: 5px;" class="p-3 bg-body-secondary hidden">
+                    <input type="text" class="form-control" id="promptInput" placeholder="Enter title for issue" required>
+                    <textarea id="promptDescription" class="form-control" placeholder="Enter your description"></textarea>
+                    <button type="submit" class="form-control btn btn-primary btn-sm">Submit</button>
+                </form>
+            </p>
         </div>
     </div>
 </div>
 <script>
-    function newIssueForm(){
-        alert('New issue!')
+    function showissueform(){
+        let newissuebtn = document.getElementById('newissuebtn');
+        let promptForm = document.getElementById('promptForm');
+        newissuebtn.classList.add('hidden');
+        promptForm.classList.remove('hidden');
     }
 
     function submitNewIssue(){
@@ -161,6 +134,12 @@
     // Handle a new Prompt getting created
     socket.on('new_prompt', function(data) {
         console.log('New prompt submitted:', data.prompt_id, data.prompt_title, data.prompt_description);
+        prompthtml = createPromptHTML(data.prompt_title, data.prompt_description, data.prompt_id);
+        document.getElementById('prompts').innerHTML+=prompthtml;
+        let newissuebtn = document.getElementById('newissuebtn');
+        let promptForm = document.getElementById('promptForm');
+        newissuebtn.classList.remove('hidden');
+        promptForm.classList.add('hidden');
     });
 
     socket.on('player_joined', function(data) {
@@ -175,6 +154,24 @@
 
     // Handle a new active prompt for the room being set
     socket.on('active_prompt_changed', function(data) {
+        let prompt_id = data.prompt_id;
+        let active_prompt = document.getElementById(`prompt-${prompt_id}`);
+        let active_prompt_btn = document.getElementById(`prompt-btn-${prompt_id}`);
+        let prompts = document.getElementsByClassName('prompt');
+        let prompt_btns = document.getElementsByClassName('prompt-btn');
+        
+        for(let prompt of prompts){
+            prompt.classList.remove('bg-body-secondary');
+        }
+        for(let btn of prompt_btns){
+            btn.classList.remove('btn-secondary');
+            btn.classList.add('btn-primary');
+            btn.innerText = 'Vote This Issue'
+        }
+        active_prompt.classList.add('bg-body-secondary');
+        active_prompt_btn.classList.remove('btn-primary');
+        active_prompt_btn.classList.add('btn-secondary');
+        active_prompt_btn.innerText = "Voting Now..."
         console.log('New active prompt:', data.prompt_id, data.prompt_title, data.prompt_description);
     });
 
@@ -225,6 +222,17 @@
         estimationsListElement.appendChild(listItem);
     }
 
+    function createPromptHTML(issue_name, issue_desc, issue_id){
+        return `
+        <div class="card mt-2 prompt" id="prompt-${issue_id}">
+            <div class="card-body">
+                <h5 class="card-title">${issue_name}</h5>
+                <p class="card-text">${issue_desc}</p>
+                <button onclick="voteActivePrompt(${issue_id})" id="prompt-btn-${issue_id}" class="prompt-btn btn btn-sm btn-primary">Vote This Issue</a>
+            </div>
+        </div>
+        `
+    }
     
 </script>
 
