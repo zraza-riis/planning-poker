@@ -5,7 +5,7 @@ import uuid
 
 from app import db, socketio
 from app.main import bp
-from app.models import Room, Player, Prompt
+from app.models import Room, Player, Prompt, Estimation
 
 @bp.route('/')
 def index():
@@ -127,6 +127,25 @@ def handle_new_active_prompt(data):
         socketio.emit('active_prompt_changed', {'prompt_id': prompt_id, 'prompt_title': prompt.title, 'prompt_description': prompt.description}, namespace='/')
     else:
         print("Room or Prompt not found.")
+
+@socketio.on('new_estimation_submitted', namespace='/')
+def handle_new_estimation(data):
+    room_uuid = data['room_uuid']
+    estimation_value = data['estimation_value']
+    player_name = session.get('player_name', 'Anonymous')
+
+    room = Room.query.filter_by(uuid=room_uuid).first_or_404()
+    prompt_id = room.active_prompt_id
+
+    if room and prompt_id:
+        new_estimation = Estimation(value=estimation_value, player_name=player_name, room=room, prompt_id=prompt_id)
+        db.session.add(new_estimation)
+        db.session.commit()
+
+        socketio.emit('new_estimation', {'player_name': player_name, 'estimation_value': estimation_value}, namespace='/')
+    else:
+        print("Room or Prompt not found.")
+
 
 
 

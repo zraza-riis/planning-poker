@@ -53,6 +53,8 @@
                     <button type="submit">Submit</button>
                 </form>
                 <br>
+                <h5>Estimations:</h5>
+                <ul id="estimationsList"></ul>
             </div>
 
             <div class="row" id="choices">
@@ -176,6 +178,12 @@
         console.log('New active prompt:', data.prompt_id, data.prompt_title, data.prompt_description);
     });
 
+    // Handle a new estimation for the player being set
+    socket.on('new_estimation', function(data) {
+        console.log('New estimation submitted:', data.player_name, data.estimation_value);
+        updateEstimationsList(data.player_name, data.estimation_value);
+    });
+
     document.getElementById('promptForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -194,6 +202,11 @@
         socket.emit('new_active_prompt', {'room_uuid': '{{ room.uuid }}', 'prompt_id': prompt_id})
     }
 
+    // Call this function when submitting a new estimation
+    function newEstimationSubmitted(estimationValue) {
+        socket.emit('new_estimation_submitted', {'room_uuid': '{{ room.uuid }}', 'estimation_value': estimationValue})
+    }
+
     function updateConnectedPlayersList(players) {
         var playersListElement = document.getElementById('connectedPlayersList');
         playersListElement.innerHTML = '';
@@ -203,6 +216,13 @@
             listItem.textContent = player;
             playersListElement.appendChild(listItem);
         });
+    }
+
+    function updateEstimationsList(playerName, estimationValue) {
+        var estimationsListElement = document.getElementById('estimationsList');
+        var listItem = document.createElement('li');
+        listItem.textContent = playerName + ': ' + estimationValue;
+        estimationsListElement.appendChild(listItem);
     }
 
     

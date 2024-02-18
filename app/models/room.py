@@ -27,7 +27,7 @@ class Player(db.Model):
 
 class Estimation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    value = db.Column(db.Integer)
+    value = db.Column(db.Integer, nullable=False)
 
     player_id = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=False)
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
