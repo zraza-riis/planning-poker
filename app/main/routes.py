@@ -55,6 +55,11 @@ def room_page(room_uuid):
 
     return render_template('room.html', room=room)
 
+@bp.route('/get-estimations/<room_uuid>', methods=['GET'])
+def get_estimations(room_uuid):
+    estimations_dict = get_estimations_for_active_prompt(room_uuid)
+    return jsonify(estimations_dict)
+
 @socketio.on('connect', namespace='/')
 def handle_connect():
     print('Client connected')
