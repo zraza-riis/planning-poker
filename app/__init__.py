@@ -1,7 +1,8 @@
 from flask import Flask
+from flask_cors import CORS
 
 from config import Config
-from app.extensions import db, login_manager
+from app.extensions import db, login_manager, socketio
 
 def create_app(config_object=Config):
     app = Flask(__name__)
@@ -10,6 +11,7 @@ def create_app(config_object=Config):
     # Initialize Flask extensions here
     db.init_app(app)
     login_manager.init_app(app)
+    socketio.init_app(app)
 
     # Register blueprints here
     from app.main import bp as main_bp
@@ -20,6 +22,8 @@ def create_app(config_object=Config):
 
     from app.ui import bp as ui_bp
     app.register_blueprint(ui_bp)
+
+    CORS(app)
 
     @app.route('/test/')
     def test_page():
