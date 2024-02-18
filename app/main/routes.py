@@ -84,10 +84,11 @@ def handle_leave_room(data):
     room = Room.query.filter_by(uuid=room_uuid).first_or_404()
 
     player = Player.query.filter_by(name=player_name, room=room).first()
+    print(player, 'left', room)
     if player:
         db.session.delete(player)
         db.session.commit()
-
+    
     socketio.emit('player_left', {'player_name': player_name, 'players': get_connected_players(room_uuid)}, namespace='/')
 
 def get_connected_players(room_uuid):
@@ -146,12 +147,16 @@ def handle_new_estimation(data):
 
     room = Room.query.filter_by(uuid=room_uuid).first_or_404()
     prompt_id = room.active_prompt_id
-
-    if room and prompt_id:
-        new_estimation = Estimation(value=estimation_value, player_name=player_name, room=room, prompt_id=prompt_id)
-        db.session.add(new_estimation)
+    player = Player.query.filter_by(room=room, name=player_name).first_or_404()
+    prompt = Prompt.query.get_or_404(prompt_id)
+    if room and prompt and player:
+        existing_estimation = Estimation.query.filter_by(player=player, room=room, prompt=prompt).first()
+        if existing_estimation:
+            existing_estimation.value = estimation_value
+        else:
+            new_estimation = Estimation(value=estimation_value, player=player, room=room, prompt=prompt)
+            db.session.add(new_estimation)
         db.session.commit()
-
         estimations_dict = get_estimations_for_active_prompt(room_uuid)
 
         socketio.emit('new_estimation', {'player_name': player_name, 'estimation_value': estimation_value, 'estimations': estimations_dict}, namespace='/')

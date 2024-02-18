@@ -1,6 +1,105 @@
-{% extends 'base.html' %}
+<!doctype html>
+<html lang="en">
 
-{% block content %}
+<head>
+    <title>Planning Poker</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Metatags with site info -->
+    <meta property="og:site_name" content="Planning Poker" />
+    <meta property="og:title" content="Planning Poker" />
+    <meta property="og:description" content="Estimate your tasks with precision and collaboration!" />
+    <meta property="og:type" content="website" />
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}" />
+
+    <!--Style-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.5.3.2.min.css') }}">
+
+    <!-- Web Sockets -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+</head>
+
+<body class="bg-dark-subtle" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary-subtle">
+        <div class="container-fluid">
+            <a class="navbar-brand ms-5" href="{{ url_for('main.index') }}" style="font-weight: 700;">
+                <img style="width: 55px;" src="{{ url_for('static', filename='icon.png') }}">&nbsp&nbsp&nbspPlanning Poker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item active" style="font-weight: 500; font-size: 1.1rem;">
+                        &nbsp&nbsp&nbsp&nbspRoom: <em style="font-weight: 700;">"{{ room.name }}"</em>
+                    </li>
+                    <li class="nav-item active" style="font-weight: 500; font-size: 1.1rem;">
+                        &nbsp&nbsp&nbsp&nbspConnected Users: <span id="numUsers"></span>
+                    </li>
+                    <!-- <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+                    </li> -->
+                    <!-- <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
+                    </li> -->
+                </ul>
+                <span class="navbar-text me-5">
+                    <button id="invitebtn" onclick="invitePlayers()" class="btn btn-primary">+ Invite Players</button>
+                    <script>
+                        function invitePlayers(){
+                            let invitebtn = document.getElementById('invitebtn');
+                            navigator.clipboard.writeText('{{ room.join_link }}');
+                            invitebtn.classList.remove('btn-primary');
+                            invitebtn.classList.add('btn-secondary');
+                            invitebtn.innerText = "Link Copied To Clipboard!";
+                            setTimeout(()=>{
+                                invitebtn.classList.add('btn-primary');
+                                invitebtn.classList.remove('btn-secondary');
+                                invitebtn.innerText = "+ Invite Players";
+                            }, 1500);
+                        }
+                    </script>
+                </span>
+                <!--
+                <span class="navbar-text">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">Sign In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </span>
+                -->
+            </div>
+        </div>
+    </nav>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-5">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% endif %}
+    {% endwith %}
 
 <style>
 
@@ -18,7 +117,6 @@
 
     #choices .col.poker {
         height: 125px;
-        background-color: rgb(32, 85, 130);
         margin: 10px;
         border-radius: 7px;
         display: flex;
@@ -27,8 +125,16 @@
         font-size: 2.5rem;
     }
 
-    #choices .col.poker:hover {
+    .poker-inactive {
+        background-color: rgb(32, 85, 130);
+    }
+
+    #choices .col.poker-inactive:hover {
         background-color: rgb(63, 114, 159);
+    }
+
+    .poker-active {
+        background-color: rgb(74, 136, 189);
     }
 </style>
 
@@ -36,13 +142,6 @@
     <div class="col-9">
         <div class="container text-center" style="height: 82vh;" id="gamearea">
             <div class="content">
-                <br>
-                <h1>You have joined room "{{ room.name }}"</h1>
-                <br>
-                <h4>Invite your team members with the following link: </h4>
-                <p>
-                    <a href="{{ room.join_link }}">{{ room.join_link }}</a>
-                </p>
                 <br>
                 <h5>Connected Users:</h5>
                 <ul id="connectedPlayersList"></ul>
@@ -55,25 +154,25 @@
             <div class="row" id="choices">
                 <div class="col"></div>
                 <div class="col"></div>
-                <div class="col poker">
+                <div id="poker-0" class="col poker poker-inactive" onclick="newEstimationClick(0)">
                     <p>0</p>
                 </div>
-                <div class="col poker">
+                <div id="poker-1" class="col poker poker-inactive" onclick="newEstimationClick(1)">
                     <p>1</p>
                 </div>
-                <div class="col poker">
+                <div id="poker-2" class="col poker poker-inactive" onclick="newEstimationClick(2)">
                     <p>2</p>
                 </div>
-                <div class="col poker">
+                <div id="poker-3" class="col poker poker-inactive" onclick="newEstimationClick(3)">
                     <p>3</p>
                 </div>
-                <div class="col poker">
+                <div id="poker-5" class="col poker poker-inactive" onclick="newEstimationClick(5)">
                     <p>5</p>
                 </div>
-                <div class="col poker">
+                <div id="poker-8" class="col poker poker-inactive" onclick="newEstimationClick(8)">
                     <p>8</p>
                 </div>
-                <div class="col poker">
+                <div id="poker-13" class="col poker poker-inactive" onclick="newEstimationClick(13)">
                     <p>13</p>
                 </div>
                 <div class="col"></div>
@@ -178,7 +277,7 @@
     // Handle a new estimation for the player being set
     socket.on('new_estimation', function(data) {
         console.log('New estimation submitted:', data.player_name, data.estimation_value, data.estimations);
-        updateEstimationsList(data.player_name, data.estimation_value);
+        updateEstimationsList(data.estimations);
     });
 
     document.getElementById('promptForm').addEventListener('submit', function(event) {
@@ -199,8 +298,23 @@
         socket.emit('new_active_prompt', {'room_uuid': '{{ room.uuid }}', 'prompt_id': prompt_id})
     }
 
+
+    function newEstimationClick(estimationValue){
+        console.log(`estimation ${estimationValue} clicked`);
+        let pokers = document.getElementsByClassName('poker');
+        for(let poker of pokers){
+            poker.classList.remove('poker-active');
+            poker.classList.add('poker-inactive');
+        }
+        let active_poker = document.getElementById(`poker-${estimationValue}`);
+        active_poker.classList.add('poker-active');
+        active_poker.classList.remove('poker-inactive');
+        newEstimationSubmitted(estimationValue);
+    }
+
     // Call this function when submitting a new estimation
     function newEstimationSubmitted(estimationValue) {
+        console.log(`estimation ${estimationValue} submitted`);
         socket.emit('new_estimation_submitted', {'room_uuid': '{{ room.uuid }}', 'estimation_value': estimationValue})
     }
 
@@ -213,13 +327,17 @@
             listItem.textContent = player;
             playersListElement.appendChild(listItem);
         });
+        let numUsers = document.getElementById('numUsers');
+        numUsers.innerText = players.length;
     }
 
-    function updateEstimationsList(playerName, estimationValue) {
+    function updateEstimationsList(estimations) {
         var estimationsListElement = document.getElementById('estimationsList');
-        var listItem = document.createElement('li');
-        listItem.textContent = playerName + ': ' + estimationValue;
-        estimationsListElement.appendChild(listItem);
+        markup = ""
+        for(let key in estimations){
+            markup+=`<li>${key} - ${estimations[key]}</li>`
+        }
+        estimationsListElement.innerHTML = markup
     }
 
     function createPromptHTML(issue_name, issue_desc, issue_id){
@@ -236,4 +354,8 @@
     
 </script>
 
-{% endblock %}
+    <!-- JS used by Bootstrap -->
+    <script src="{{ url_for('static', filename='bootstrap.5.3.2.bundle.min.js') }}"></script>
+</body>
+
+</html>
