@@ -113,7 +113,7 @@ def handle_new_prompt(data):
 
     room = Room.query.filter_by(uuid=room_uuid).first_or_404()
 
-    new_prompt = Prompt(title=prompt_title, description=prompt_description)
+    new_prompt = Prompt(title=prompt_title, description=prompt_description, room_id=room.id)
     db.session.add(new_prompt)
     db.session.commit()
 
